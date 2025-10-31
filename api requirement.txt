@@ -1,0 +1,1607 @@
+# Complete API Endpoints with JSON Examples
+
+---
+
+## AUTHENTICATION ENDPOINTS
+
+### 1. POST /api/auth/login
+**Description:** Authenticate user and get access token
+
+**Request JSON:**
+```json
+{
+  "email": "aisha@example.com",
+  "password": "password123",
+  "userType": "student"
+}
+```
+
+**Response JSON (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Login successful",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjEiLCJlbWFpbCI6ImFpc2hhQGV4YW1wbGUuY29tIn0...",
+  "refreshToken": "refresh_token_value",
+  "user": {
+    "id": "1",
+    "name": "Aisha Rahman",
+    "email": "aisha@example.com",
+    "userType": "student",
+    "profileImage": "https://images.pexels.com/photos/8472968/...",
+    "organization": null
+  }
+}
+```
+
+---
+
+### 2. POST /api/auth/register
+**Description:** Create new user account
+
+**Request JSON:**
+```json
+{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "password": "secure_password123",
+  "userType": "student",
+  "phone": "+880-1234-567890",
+  "organization": null
+}
+```
+
+**Response JSON (201 Created):**
+```json
+{
+  "success": true,
+  "message": "User registered successfully",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": "new_user_id_123",
+    "name": "John Doe",
+    "email": "john@example.com",
+    "userType": "student",
+    "createdAt": "2024-03-10T10:30:00Z"
+  }
+}
+```
+
+---
+
+### 3. POST /api/auth/logout
+**Description:** Clear user session
+
+**Request Headers:** 
+```
+Authorization: Bearer {token}
+```
+
+**Response JSON (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Logged out successfully"
+}
+```
+
+---
+
+### 4. GET /api/auth/me
+**Description:** Get authenticated user details
+
+**Request Headers:** 
+```
+Authorization: Bearer {token}
+```
+
+**Response JSON (200 OK):**
+```json
+{
+  "success": true,
+  "user": {
+    "id": "1",
+    "name": "Aisha Rahman",
+    "email": "aisha@example.com",
+    "userType": "student",
+    "phone": "+880-1234-567890",
+    "profileImage": "https://images.pexels.com/photos/8472968/...",
+    "organization": null,
+    "joinDate": "2024-01-15T00:00:00Z",
+    "lastLogin": "2024-03-10T10:30:00Z"
+  }
+}
+```
+
+---
+
+### 5. POST /api/auth/refresh
+**Description:** Refresh JWT token
+
+**Request JSON:**
+```json
+{
+  "refreshToken": "refresh_token_value"
+}
+```
+
+**Response JSON (200 OK):**
+```json
+{
+  "success": true,
+  "token": "new_jwt_token_value",
+  "refreshToken": "new_refresh_token_value",
+  "expiresIn": 86400
+}
+```
+
+---
+
+## STUDENT ENDPOINTS
+
+### 6. GET /api/students
+**Description:** Get all students with pagination and filters
+
+**Query Parameters:**
+```
+?page=1&limit=10&region=Dhaka&class=Class%2011&financialNeed=High&gender=Female&sort=name&order=asc
+```
+
+**Response JSON (200 OK):**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "1",
+      "name": "Aisha Rahman",
+      "age": 16,
+      "gender": "Female",
+      "class": "Class 11",
+      "school": "Dhaka Government Girls' High School",
+      "region": "Dhaka, Bangladesh",
+      "financialNeed": "High",
+      "monthlyIncome": 12000,
+      "familySize": 5,
+      "interests": ["Science", "Technology", "Mathematics"],
+      "academicRecord": "85%",
+      "story": "Aisha dreams of becoming a software engineer and contributing to Bangladesh's growing tech industry.",
+      "documentsSubmitted": ["income_certificate.pdf", "academic_records.pdf", "family_photo.jpg"],
+      "applicationStatus": "approved",
+      "sponsorId": null,
+      "profileImage": "https://images.pexels.com/photos/8472968/pexels-photo-8472968.jpeg?auto=compress&cs=tinysrgb&w=400",
+      "applicationDate": "2024-01-15",
+      "lastProgressUpdate": "2024-03-01",
+      "currency": "BDT"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 25,
+    "pages": 3
+  }
+}
+```
+
+---
+
+### 7. GET /api/students/{id}
+**Description:** Get student by ID
+
+**Response JSON (200 OK):**
+```json
+{
+  "success": true,
+  "data": {
+    "id": "1",
+    "name": "Aisha Rahman",
+    "age": 16,
+    "gender": "Female",
+    "class": "Class 11",
+    "school": "Dhaka Government Girls' High School",
+    "region": "Dhaka, Bangladesh",
+    "financialNeed": "High",
+    "monthlyIncome": 12000,
+    "familySize": 5,
+    "interests": ["Science", "Technology", "Mathematics"],
+    "academicRecord": "85%",
+    "story": "Aisha dreams of becoming a software engineer and contributing to Bangladesh's growing tech industry. Despite financial constraints, she consistently ranks top in her class.",
+    "documentsSubmitted": ["income_certificate.pdf", "academic_records.pdf", "family_photo.jpg"],
+    "applicationStatus": "approved",
+    "sponsorId": null,
+    "profileImage": "https://images.pexels.com/photos/8472968/pexels-photo-8472968.jpeg?auto=compress&cs=tinysrgb&w=400",
+    "applicationDate": "2024-01-15",
+    "lastProgressUpdate": "2024-03-01",
+    "currency": "BDT"
+  }
+}
+```
+
+---
+
+### 8. POST /api/students
+**Description:** Create new student
+
+**Request Headers:** 
+```
+Authorization: Bearer {token}
+```
+
+**Request JSON:**
+```json
+{
+  "name": "New Student",
+  "age": 16,
+  "gender": "Female",
+  "class": "Class 11",
+  "school": "High School Name",
+  "region": "City, Country",
+  "financialNeed": "High",
+  "monthlyIncome": 15000,
+  "familySize": 5,
+  "interests": ["Science", "Technology"],
+  "academicRecord": "85%",
+  "story": "Student story and background...",
+  "profileImage": "https://images.pexels.com/photos/...",
+  "currency": "BDT"
+}
+```
+
+**Response JSON (201 Created):**
+```json
+{
+  "success": true,
+  "message": "Student created successfully",
+  "data": {
+    "id": "new_student_id",
+    "name": "New Student",
+    "applicationStatus": "pending",
+    "applicationDate": "2024-03-10T10:30:00Z"
+  }
+}
+```
+
+---
+
+### 9. PUT /api/students/{id}
+**Description:** Update student profile
+
+**Request Headers:** 
+```
+Authorization: Bearer {token}
+```
+
+**Request JSON:**
+```json
+{
+  "age": 17,
+  "academicRecord": "87%",
+  "story": "Updated story...",
+  "interests": ["Science", "Technology", "Mathematics"]
+}
+```
+
+**Response JSON (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Student updated successfully",
+  "data": {
+    "id": "1",
+    "name": "Aisha Rahman",
+    "age": 17,
+    "academicRecord": "87%"
+  }
+}
+```
+
+---
+
+### 10. DELETE /api/students/{id}
+**Description:** Delete student (admin only)
+
+**Request Headers:** 
+```
+Authorization: Bearer {token}
+```
+
+**Response JSON (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Student deleted successfully"
+}
+```
+
+---
+
+### 11. GET /api/students/search
+**Description:** Advanced search with filters
+
+**Query Parameters:**
+```
+?query=Aisha&region=Dhaka&class=Class%2011&financialNeed=High&gender=Female&limit=10
+```
+
+**Response JSON (200 OK):**
+```json
+{
+  "success": true,
+  "results": [
+    {
+      "id": "1",
+      "name": "Aisha Rahman",
+      "region": "Dhaka, Bangladesh",
+      "class": "Class 11",
+      "academicRecord": "85%",
+      "profileImage": "https://images.pexels.com/photos/8472968/..."
+    }
+  ]
+}
+```
+
+---
+
+### 12. GET /api/students/{id}/dashboard
+**Description:** Get student dashboard data
+
+**Request Headers:** 
+```
+Authorization: Bearer {token}
+```
+
+**Response JSON (200 OK):**
+```json
+{
+  "success": true,
+  "data": {
+    "student": {
+      "id": "1",
+      "name": "Aisha Rahman",
+      "email": "aisha@example.com",
+      "profileImage": "https://images.pexels.com/photos/8472968/...",
+      "applicationStatus": "approved",
+      "sponsorId": null
+    },
+    "application": {
+      "id": "1",
+      "status": "approved",
+      "approvedDate": "2024-01-20",
+      "adminNotes": "Excellent academic performance and clear financial need demonstrated."
+    },
+    "progressReports": [
+      {
+        "id": "1",
+        "reportDate": "2024-03-01",
+        "semester": "Spring 2024",
+        "overallPercentage": 88.75
+      }
+    ],
+    "sponsorInfo": null
+  }
+}
+```
+
+---
+
+### 13. POST /api/students/{id}/upload-document
+**Description:** Upload document for application
+
+**Request Headers:** 
+```
+Authorization: Bearer {token}
+Content-Type: multipart/form-data
+```
+
+**Form Data:**
+```
+file: (file upload)
+documentType: income_certificate
+```
+
+**Response JSON (201 Created):**
+```json
+{
+  "success": true,
+  "message": "Document uploaded successfully",
+  "data": {
+    "documentId": "doc_123",
+    "filename": "income_certificate.pdf",
+    "documentType": "income_certificate",
+    "uploadDate": "2024-03-10T10:30:00Z",
+    "url": "https://cdn.sponsorship-portal.com/documents/doc_123"
+  }
+}
+```
+
+---
+
+### 14. GET /api/students/{id}/progress
+**Description:** Get student progress history
+
+**Query Parameters:**
+```
+?limit=10&page=1
+```
+
+**Response JSON (200 OK):**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "1",
+      "reportDate": "2024-03-01",
+      "semester": "Spring 2024",
+      "subjects": [
+        {
+          "name": "Mathematics",
+          "grade": "A",
+          "marks": 92
+        },
+        {
+          "name": "Physics",
+          "grade": "A",
+          "marks": 88
+        }
+      ],
+      "overallGrade": "A",
+      "overallPercentage": 88.75,
+      "attendance": 95,
+      "achievements": ["Science Fair Winner", "Math Olympiad Participant"]
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 1,
+    "pages": 1
+  }
+}
+```
+
+---
+
+## SPONSOR ENDPOINTS
+
+### 15. GET /api/sponsors
+**Description:** Get all sponsors
+
+**Query Parameters:**
+```
+?page=1&limit=10&location=San%20Francisco&search=Sarah
+```
+
+**Response JSON (200 OK):**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "1",
+      "name": "Dr. Sarah Johnson",
+      "email": "sarah.johnson@email.com",
+      "phone": "+1-555-0123",
+      "organization": "Tech for Good Foundation",
+      "location": "San Francisco, CA",
+      "totalDonated": 25000,
+      "sponsoredStudents": [],
+      "joinDate": "2024-01-05",
+      "preferences": {
+        "regions": ["Maharashtra", "Karnataka"],
+        "interests": ["Technology", "Science"],
+        "maxStudents": 3
+      }
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 3,
+    "pages": 1
+  }
+}
+```
+
+---
+
+### 16. GET /api/sponsors/{id}
+**Description:** Get sponsor by ID
+
+**Response JSON (200 OK):**
+```json
+{
+  "success": true,
+  "data": {
+    "id": "1",
+    "name": "Dr. Sarah Johnson",
+    "email": "sarah.johnson@email.com",
+    "phone": "+1-555-0123",
+    "organization": "Tech for Good Foundation",
+    "location": "San Francisco, CA",
+    "totalDonated": 25000,
+    "sponsoredStudents": [],
+    "joinDate": "2024-01-05",
+    "preferences": {
+      "regions": ["Maharashtra", "Karnataka"],
+      "interests": ["Technology", "Science"],
+      "maxStudents": 3
+    }
+  }
+}
+```
+
+---
+
+### 17. POST /api/sponsors
+**Description:** Register new sponsor
+
+**Request JSON:**
+```json
+{
+  "name": "New Sponsor",
+  "email": "sponsor@example.com",
+  "phone": "+1-555-0123",
+  "organization": "Foundation Name",
+  "location": "City, Country",
+  "password": "secure_password",
+  "preferences": {
+    "regions": ["Region1", "Region2"],
+    "interests": ["Technology", "Science"],
+    "maxStudents": 5
+  }
+}
+```
+
+**Response JSON (201 Created):**
+```json
+{
+  "success": true,
+  "message": "Sponsor registered successfully",
+  "data": {
+    "id": "new_sponsor_id",
+    "name": "New Sponsor",
+    "email": "sponsor@example.com",
+    "joinDate": "2024-03-10T10:30:00Z"
+  }
+}
+```
+
+---
+
+### 18. PUT /api/sponsors/{id}
+**Description:** Update sponsor profile
+
+**Request Headers:** 
+```
+Authorization: Bearer {token}
+```
+
+**Request JSON:**
+```json
+{
+  "organization": "Updated Foundation",
+  "location": "New City, Country",
+  "preferences": {
+    "regions": ["Region1", "Region3"],
+    "interests": ["Education", "Science"],
+    "maxStudents": 10
+  }
+}
+```
+
+**Response JSON (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Sponsor updated successfully",
+  "data": {
+    "id": "1",
+    "organization": "Updated Foundation",
+    "preferences": {
+      "regions": ["Region1", "Region3"],
+      "interests": ["Education", "Science"],
+      "maxStudents": 10
+    }
+  }
+}
+```
+
+---
+
+### 19. GET /api/sponsors/{id}/dashboard
+**Description:** Get sponsor dashboard data
+
+**Request Headers:** 
+```
+Authorization: Bearer {token}
+```
+
+**Response JSON (200 OK):**
+```json
+{
+  "success": true,
+  "data": {
+    "sponsor": {
+      "id": "1",
+      "name": "Dr. Sarah Johnson",
+      "organization": "Tech for Good Foundation",
+      "totalDonated": 25000,
+      "joinDate": "2024-01-05"
+    },
+    "sponsorshipStats": {
+      "totalStudents": 0,
+      "activeSponsors": 0,
+      "donationCount": 0,
+      "totalDonated": 25000
+    },
+    "donationHistory": [],
+    "sponsoredStudents": []
+  }
+}
+```
+
+---
+
+### 20. GET /api/sponsors/{id}/students
+**Description:** Get sponsored students
+
+**Request Headers:** 
+```
+Authorization: Bearer {token}
+```
+
+**Query Parameters:**
+```
+?page=1&limit=10&search=Amara&status=active
+```
+
+**Response JSON (200 OK):**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "3",
+      "name": "Amara Okafor",
+      "age": 17,
+      "class": "Form 6",
+      "region": "Lagos, Nigeria",
+      "school": "Lagos State Secondary School",
+      "academicRecord": "92%",
+      "profileImage": "https://images.pexels.com/photos/9159059/...",
+      "lastProgressUpdate": "2024-02-28",
+      "currency": "NGN"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 1,
+    "pages": 1
+  }
+}
+```
+
+---
+
+### 21. GET /api/sponsors/{id}/donations
+**Description:** Get sponsor donations
+
+**Request Headers:** 
+```
+Authorization: Bearer {token}
+```
+
+**Query Parameters:**
+```
+?page=1&limit=10&type=monthly_sponsorship&startDate=2024-01-01&endDate=2024-03-10
+```
+
+**Response JSON (200 OK):**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "1",
+      "sponsorId": "2",
+      "studentId": "3",
+      "amount": 5000,
+      "date": "2024-02-01",
+      "type": "monthly_sponsorship",
+      "status": "completed",
+      "paymentMethod": "credit_card",
+      "transactionId": "TXN_001_2024",
+      "purpose": "Monthly educational support"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 1,
+    "pages": 1
+  }
+}
+```
+
+---
+
+### 22. GET /api/sponsors/search
+**Description:** Search sponsors
+
+**Query Parameters:**
+```
+?query=Sarah&location=San%20Francisco&limit=10
+```
+
+**Response JSON (200 OK):**
+```json
+{
+  "success": true,
+  "results": [
+    {
+      "id": "1",
+      "name": "Dr. Sarah Johnson",
+      "organization": "Tech for Good Foundation",
+      "location": "San Francisco, CA",
+      "totalDonated": 25000
+    }
+  ]
+}
+```
+
+---
+
+## APPLICATION ENDPOINTS
+
+### 23. GET /api/applications
+**Description:** Get all applications (admin)
+
+**Request Headers:** 
+```
+Authorization: Bearer {token}
+```
+
+**Query Parameters:**
+```
+?page=1&limit=10&status=pending&sort=applicationDate
+```
+
+**Response JSON (200 OK):**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "1",
+      "studentId": "1",
+      "studentName": "Aisha Rahman",
+      "applicationDate": "2024-01-15",
+      "status": "approved",
+      "documents": [
+        {
+          "type": "income_certificate",
+          "filename": "income_certificate.pdf",
+          "uploadDate": "2024-01-15",
+          "verified": true
+        }
+      ],
+      "adminNotes": "Excellent academic performance and clear financial need demonstrated.",
+      "approvedBy": "admin1",
+      "approvedDate": "2024-01-20"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 15,
+    "pages": 2
+  }
+}
+```
+
+---
+
+### 24. GET /api/applications/{id}
+**Description:** Get application by ID
+
+**Request Headers:** 
+```
+Authorization: Bearer {token}
+```
+
+**Response JSON (200 OK):**
+```json
+{
+  "success": true,
+  "data": {
+    "id": "1",
+    "studentId": "1",
+    "applicationDate": "2024-01-15",
+    "status": "approved",
+    "documents": [
+      {
+        "type": "income_certificate",
+        "filename": "income_certificate.pdf",
+        "uploadDate": "2024-01-15",
+        "verified": true,
+        "url": "https://cdn.sponsorship-portal.com/applications/doc_1"
+      },
+      {
+        "type": "academic_records",
+        "filename": "academic_records.pdf",
+        "uploadDate": "2024-01-15",
+        "verified": true,
+        "url": "https://cdn.sponsorship-portal.com/applications/doc_2"
+      }
+    ],
+    "adminNotes": "Excellent academic performance and clear financial need.",
+    "approvedBy": "admin1",
+    "approvedDate": "2024-01-20"
+  }
+}
+```
+
+---
+
+### 25. POST /api/applications
+**Description:** Submit new application
+
+**Request Headers:** 
+```
+Authorization: Bearer {token}
+```
+
+**Request JSON:**
+```json
+{
+  "studentId": "1",
+  "documents": [
+    {
+      "type": "income_certificate",
+      "filename": "income_certificate.pdf",
+      "uploadDate": "2024-03-10T10:30:00Z"
+    }
+  ]
+}
+```
+
+**Response JSON (201 Created):**
+```json
+{
+  "success": true,
+  "message": "Application submitted successfully",
+  "data": {
+    "id": "new_app_id",
+    "studentId": "1",
+    "status": "pending",
+    "applicationDate": "2024-03-10T10:30:00Z"
+  }
+}
+```
+
+---
+
+### 26. PUT /api/applications/{id}/status
+**Description:** Update application status
+
+**Request Headers:** 
+```
+Authorization: Bearer {token}
+```
+
+**Request JSON:**
+```json
+{
+  "status": "approved",
+  "adminNotes": "All documents verified. Excellent candidate.",
+  "approvedBy": "admin1"
+}
+```
+
+**Response JSON (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Application status updated",
+  "data": {
+    "id": "1",
+    "studentId": "1",
+    "status": "approved",
+    "approvedDate": "2024-03-10T10:30:00Z"
+  }
+}
+```
+
+---
+
+### 27. PUT /api/applications/{id}/verify-document/{docId}
+**Description:** Verify document
+
+**Request Headers:** 
+```
+Authorization: Bearer {token}
+```
+
+**Request JSON:**
+```json
+{
+  "verified": true,
+  "verifiedBy": "admin1",
+  "verificationNotes": "Document authentic and verified"
+}
+```
+
+**Response JSON (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Document verified successfully",
+  "data": {
+    "documentId": "doc_1",
+    "verified": true,
+    "verificationDate": "2024-03-10T10:30:00Z"
+  }
+}
+```
+
+---
+
+### 28. GET /api/students/{studentId}/applications
+**Description:** Get student applications
+
+**Request Headers:** 
+```
+Authorization: Bearer {token}
+```
+
+**Response JSON (200 OK):**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "1",
+      "studentId": "1",
+      "applicationDate": "2024-01-15",
+      "status": "approved",
+      "approvedDate": "2024-01-20",
+      "documentCount": 2,
+      "adminNotes": "Excellent academic performance..."
+    }
+  ]
+}
+```
+
+---
+
+## DONATION ENDPOINTS
+
+### 29. GET /api/donations
+**Description:** Get all donations
+
+**Query Parameters:**
+```
+?page=1&limit=10&type=monthly_sponsorship&status=completed&startDate=2024-01-01&endDate=2024-03-10
+```
+
+**Response JSON (200 OK):**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "1",
+      "sponsorId": "2",
+      "sponsorName": "Michael Chen",
+      "studentId": "3",
+      "studentName": "Amara Okafor",
+      "amount": 5000,
+      "date": "2024-02-01",
+      "type": "monthly_sponsorship",
+      "status": "completed",
+      "paymentMethod": "credit_card",
+      "transactionId": "TXN_001_2024",
+      "currency": "USD",
+      "purpose": "Monthly educational support",
+      "receiptGenerated": true,
+      "receiptUrl": "https://cdn.sponsorship-portal.com/receipts/receipt_1"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 3,
+    "pages": 1
+  }
+}
+```
+
+---
+
+### 30. GET /api/donations/{id}
+**Description:** Get donation by ID
+
+**Response JSON (200 OK):**
+```json
+{
+  "success": true,
+  "data": {
+    "id": "1",
+    "sponsorId": "2",
+    "studentId": "3",
+    "amount": 5000,
+    "date": "2024-02-01",
+    "type": "monthly_sponsorship",
+    "status": "completed",
+    "paymentMethod": "credit_card",
+    "transactionId": "TXN_001_2024",
+    "receiptGenerated": true,
+    "purpose": "Monthly educational support"
+  }
+}
+```
+
+---
+
+### 31. POST /api/donations
+**Description:** Create new donation
+
+**Request Headers:** 
+```
+Authorization: Bearer {token}
+```
+
+**Request JSON:**
+```json
+{
+  "sponsorId": "1",
+  "studentId": "3",
+  "amount": 5000,
+  "type": "monthly_sponsorship",
+  "paymentMethod": "credit_card",
+  "purpose": "Monthly educational support",
+  "currency": "USD"
+}
+```
+
+**Response JSON (201 Created):**
+```json
+{
+  "success": true,
+  "message": "Donation created successfully",
+  "data": {
+    "id": "new_donation_id",
+    "sponsorId": "1",
+    "studentId": "3",
+    "amount": 5000,
+    "status": "pending",
+    "transactionId": "TXN_new",
+    "date": "2024-03-10T10:30:00Z"
+  }
+}
+```
+
+---
+
+### 32. PUT /api/donations/{id}/status
+**Description:** Update donation status
+
+**Request Headers:** 
+```
+Authorization: Bearer {token}
+```
+
+**Request JSON:**
+```json
+{
+  "status": "completed",
+  "transactionId": "TXN_001_2024"
+}
+```
+
+**Response JSON (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Donation status updated",
+  "data": {
+    "id": "1",
+    "status": "completed",
+    "transactionId": "TXN_001_2024"
+  }
+}
+```
+
+---
+
+### 33. POST /api/donations/{id}/generate-receipt
+**Description:** Generate receipt for donation
+
+**Request Headers:** 
+```
+Authorization: Bearer {token}
+```
+
+**Response JSON (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Receipt generated successfully",
+  "data": {
+    "receiptId": "receipt_001",
+    "donationId": "1",
+    "url": "https://cdn.sponsorship-portal.com/receipts/receipt_001.pdf",
+    "generatedDate": "2024-03-10T10:30:00Z"
+  }
+}
+```
+
+---
+
+### 34. GET /api/sponsors/{sponsorId}/donations-summary
+**Description:** Get donation summary
+
+**Response JSON (200 OK):**
+```json
+{
+  "success": true,
+  "data": {
+    "totalDonations": 25000,
+    "donationCount": 3,
+    "averageDonation": 8333.33,
+    "monthlyDonations": [
+      {
+        "month": "January 2024",
+        "amount": 10000,
+        "count": 1
+      },
+      {
+        "month": "February 2024",
+        "amount": 5000,
+        "count": 1
+      }
+    ]
+  }
+}
+```
+
+---
+
+### 35. GET /api/donations/export
+**Description:** Export donations data
+
+**Query Parameters:**
+```
+?format=csv&startDate=2024-01-01&endDate=2024-03-10
+```
+
+**Response:** File download (CSV/XLSX)
+
+---
+
+## PROGRESS REPORT ENDPOINTS
+
+### 36. GET /api/progress-reports
+**Description:** Get all progress reports
+
+**Query Parameters:**
+```
+?page=1&limit=10&studentId=1&semester=Spring%202024
+```
+
+**Response JSON (200 OK):**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "1",
+      "studentId": "1",
+      "studentName": "Aisha Rahman",
+      "reportDate": "2024-03-01",
+      "semester": "Spring 2024",
+      "overallGrade": "A",
+      "overallPercentage": 88.75,
+      "attendance": 95,
+      "achievements": ["Science Fair Winner", "Math Olympiad Participant"]
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 2,
+    "pages": 1
+  }
+}
+```
+
+---
+
+### 37. GET /api/progress-reports/{id}
+**Description:** Get progress report by ID
+
+**Response JSON (200 OK):**
+```json
+{
+  "success": true,
+  "data": {
+    "id": "1",
+    "studentId": "1",
+    "reportDate": "2024-03-01",
+    "semester": "Spring 2024",
+    "subjects": [
+      {
+        "name": "Mathematics",
+        "grade": "A",
+        "marks": 92
+      },
+      {
+        "name": "Physics",
+        "grade": "A",
+        "marks": 88
+      },
+      {
+        "name": "Chemistry",
+        "grade": "B+",
+        "marks": 85
+      },
+      {
+        "name": "English",
+        "grade": "A",
+        "marks": 90
+      }
+    ],
+    "overallGrade": "A",
+    "overallPercentage": 88.75,
+    "attendance": 95,
+    "teacherComments": "Aisha continues to excel in her studies and shows great potential in STEM subjects.",
+    "achievements": ["Science Fair Winner", "Math Olympiad Participant"],
+    "challenges": "None reported",
+    "goals": "Preparing for engineering entrance exams"
+  }
+}
+```
+
+---
+
+### 38. POST /api/progress-reports
+**Description:** Submit progress report
+
+**Request Headers:** 
+```
+Authorization: Bearer {token}
+```
+
+**Request JSON:**
+```json
+{
+  "studentId": "1",
+  "semester": "Spring 2024",
+  "subjects": [
+    {
+      "name": "Mathematics",
+      "grade": "A",
+      "marks": 92
+    },
+    {
+      "name": "Physics",
+      "grade": "A",
+      "marks": 88
+    }
+  ],
+  "overallGrade": "A",
+  "overallPercentage": 90,
+  "attendance": 95,
+  "teacherComments": "Excellent performance",
+  "achievements": ["Science Fair Winner"],
+  "challenges": "Managing time between academics and extracurricular",
+  "goals": "Score 95% in final exams"
+}
+```
+
+**Response JSON (201 Created):**
+```json
+{
+  "success": true,
+  "message": "Progress report submitted successfully",
+  "data": {
+    "id": "new_report_id",
+    "studentId": "1",
+    "reportDate": "2024-03-10T10:30:00Z",
+    "semester": "Spring 2024",
+    "overallPercentage": 90
+  }
+}
+```
+
+---
+
+### 39. PUT /api/progress-reports/{id}
+**Description:** Update progress report
+
+**Request Headers:** 
+```
+Authorization: Bearer {token}
+```
+
+**Request JSON:**
+```json
+{
+  "overallPercentage": 92,
+  "teacherComments": "Updated comments",
+  "achievements": ["Science Fair Winner", "Debate Champion"]
+}
+```
+
+**Response JSON (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Progress report updated successfully",
+  "data": {
+    "id": "1",
+    "studentId": "1",
+    "overallPercentage": 92
+  }
+}
+```
+
+---
+
+### 40. GET /api/students/{studentId}/progress-history
+**Description:** Get student progress history
+
+**Query Parameters:**
+```
+?limit=10&page=1
+```
+
+**Response JSON (200 OK):**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "1",
+      "reportDate": "2024-03-01",
+      "semester": "Spring 2024",
+      "overallPercentage": 88.75,
+      "overallGrade": "A",
+      "attendance": 95
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 1,
+    "pages": 1
+  }
+}
+```
+
+---
+
+### 41. GET /api/sponsors/{sponsorId}/students-progress
+**Description:** Get sponsored students progress
+
+**Request Headers:** 
+```
+Authorization: Bearer {token}
+```
+
+**Response JSON (200 OK):**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "studentId": "3",
+      "studentName": "Amara Okafor",
+      "latestReport": {
+        "id": "2",
+        "reportDate": "2024-02-28",
+        "overallPercentage": 91.75,
+        "overallGrade": "A+",
+        "semester": "Spring 2024"
+      }
+    }
+  ]
+}
+```
+
+---
+
+## ADMIN ENDPOINTS
+
+### 42. GET /api/admin/dashboard
+**Description:** Get admin dashboard
+
+**Request Headers:** 
+```
+Authorization: Bearer {token}
+```
+
+**Response JSON (200 OK):**
+```json
+{
+  "success": true,
+  "data": {
+    "totalStudents": 25,
+    "totalSponsors": 3,
+    "approvedApplications": 18,
+    "pendingApplications": 5,
+    "rejectedApplications": 2,
+    "totalDonations": 50000,
+    "recentApplications": [
+      {
+        "id": "1",
+        "studentName": "Aisha Rahman",
+        "status": "approved",
+        "applicationDate": "2024-01-15"
+      }
+    ],
+    "recentDonations": [
+      {
+        "id": "1",
+        "sponsorName": "Michael Chen",
+        "amount": 5000,
+        "date": "2024-02-01"
+      }
+    ]
+  }
+}
+```
+
+---
+
+### 43. GET /api/admin/users
+**Description:** Get all admin users
+
+**Request Headers:** 
+```
+Authorization: Bearer {token}
+```
+
+**Response JSON (200 OK):**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": "admin1",
+      "username": "admin",
+      "email": "admin@sponsorship.org",
+      "role": "super_admin",
+      "permissions": ["approve_applications", "verify_documents", "manage_users", "view_reports"],
+      "lastLogin": "2024-03-01T10:30:00Z"
+    }
+  ]
+}
+```
+
+---
+
+### 44. POST /api/admin/users
+**Description:** Create admin user
+
+**Request Headers:** 
+```
+Authorization: Bearer {token}
+```
+
+**Request JSON:**
+```json
+{
+  "username": "new_admin",
+  "email": "newadmin@sponsorship.org",
+  "password": "secure_password",
+  "role": "admin",
+  "permissions": ["approve_applications", "verify_documents", "view_reports"]
+}
+```
+
+**Response JSON (201 Created):**
+```json
+{
+  "success": true,
+  "message": "Admin user created successfully",
+  "data": {
+    "id": "admin_new",
+    "username": "new_admin",
+    "email": "newadmin@sponsorship.org",
+    "role": "admin"
+  }
+}
+```
+
+---
+
+### 45. GET /api/admin/reports
+**Description:** Get reports
+
+**Request Headers:** 
+```
+Authorization: Bearer {token}
+```
+
+**Query Parameters:**
+```
+?type=donation_summary&startDate=2024-01-01&endDate=2024-03-10
+```
+
+**Response JSON (200 OK):**
+```json
+{
+  "success": true,
+  "data": {
+    "reportType": "donation_summary",
+    "period": {
+      "startDate": "2024-01-01",
+      "endDate": "2024-03-10"
+    },
+    "summary": {
+      "totalDonations": 50000,
+      "totalTransactions": 3,
+      "averageDonation": 16666.67,
+      "topSponsors": [
+        {
+          "id": "3",
+          "name": "Global Education Trust",
+          "totalDonated": 25000,
+          "transactionCount": 1
+        }
+      ],
+      "donationsByType": {
+        "monthly_sponsorship": {
+          "count": 1,
+          "amount": 5000
+        },
+        "general_donation": {
+          "count": 1,
+          "amount": 10000
+        },
+        "bulk_donation": {
+          "count": 1,
+          "amount": 25000
+        }
+      }
+    }
+  }
+}
+```
+
+---
+
+### 46. PUT /api/admin/applications/{id}/verify
+**Description:** Verify application
+
+**Request Headers:** 
+```
+Authorization: Bearer {token}
+```
+
+**Request JSON:**
+```json
+{
+  "status": "approved",
+  "adminNotes": "All documents verified successfully.",
+  "verifiedBy": "admin1"
+}
+```
+
+**Response JSON (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Application verified successfully",
+  "data": {
+    "id": "1",
+    "studentId": "1",
+    "status": "approved",
+    "verifiedDate": "2024-03-10T10:30:00Z"
+  }
+}
+```

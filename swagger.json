@@ -1,0 +1,1548 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Sponsorship Portal API",
+    "version": "1.0.0",
+    "description": "Complete API documentation for the Sponsorship Portal backend application"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Development server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "LoginRequest": {
+        "type": "object",
+        "required": ["email", "password", "userType"],
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "aisha@example.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "password123"
+          },
+          "userType": {
+            "type": "string",
+            "enum": ["student", "sponsor", "admin"],
+            "example": "student"
+          }
+        }
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "example": "Login successful"
+          },
+          "token": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          },
+          "refreshToken": {
+            "type": "string",
+            "example": "refresh_token_value"
+          },
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {"type": "string"},
+              "name": {"type": "string"},
+              "email": {"type": "string"},
+              "userType": {"type": "string"},
+              "profileImage": {"type": "string"},
+              "organization": {"type": "string", "nullable": true}
+            }
+          }
+        }
+      },
+      "RegisterRequest": {
+        "type": "object",
+        "required": ["name", "email", "password", "userType"],
+        "properties": {
+          "name": {"type": "string", "example": "John Doe"},
+          "email": {"type": "string", "example": "john@example.com"},
+          "password": {"type": "string", "example": "secure_password123"},
+          "userType": {"type": "string", "enum": ["student", "sponsor", "admin"]},
+          "phone": {"type": "string", "example": "+880-1234-567890"},
+          "organization": {"type": "string", "nullable": true}
+        }
+      },
+      "Student": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "string"},
+          "name": {"type": "string"},
+          "age": {"type": "number"},
+          "gender": {"type": "string", "enum": ["Male", "Female", "Other"]},
+          "class": {"type": "string"},
+          "school": {"type": "string"},
+          "region": {"type": "string"},
+          "financialNeed": {"type": "string", "enum": ["Low", "Medium", "High"]},
+          "monthlyIncome": {"type": "number"},
+          "familySize": {"type": "number"},
+          "interests": {"type": "array", "items": {"type": "string"}},
+          "academicRecord": {"type": "string"},
+          "story": {"type": "string"},
+          "documentsSubmitted": {"type": "array", "items": {"type": "string"}},
+          "applicationStatus": {"type": "string", "enum": ["pending", "approved", "rejected"]},
+          "sponsorId": {"type": "string", "nullable": true},
+          "profileImage": {"type": "string"},
+          "applicationDate": {"type": "string", "format": "date"},
+          "lastProgressUpdate": {"type": "string", "format": "date"},
+          "currency": {"type": "string"}
+        }
+      },
+      "Sponsor": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "string"},
+          "name": {"type": "string"},
+          "email": {"type": "string"},
+          "phone": {"type": "string"},
+          "organization": {"type": "string"},
+          "location": {"type": "string"},
+          "totalDonated": {"type": "number"},
+          "sponsoredStudents": {"type": "array", "items": {"type": "string"}},
+          "joinDate": {"type": "string", "format": "date"},
+          "preferences": {
+            "type": "object",
+            "properties": {
+              "regions": {"type": "array", "items": {"type": "string"}},
+              "interests": {"type": "array", "items": {"type": "string"}},
+              "maxStudents": {"type": "number"}
+            }
+          }
+        }
+      },
+      "Application": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "string"},
+          "studentId": {"type": "string"},
+          "studentName": {"type": "string"},
+          "applicationDate": {"type": "string", "format": "date"},
+          "status": {"type": "string", "enum": ["pending", "approved", "rejected"]},
+          "documents": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {"type": "string"},
+                "filename": {"type": "string"},
+                "url": {"type": "string"},
+                "uploadDate": {"type": "string"},
+                "verified": {"type": "boolean"}
+              }
+            }
+          },
+          "adminNotes": {"type": "string"},
+          "approvedBy": {"type": "string"},
+          "approvedDate": {"type": "string", "format": "date"}
+        }
+      },
+      "Donation": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "string"},
+          "sponsorId": {"type": "string"},
+          "sponsorName": {"type": "string"},
+          "studentId": {"type": "string"},
+          "studentName": {"type": "string"},
+          "amount": {"type": "number"},
+          "date": {"type": "string", "format": "date"},
+          "type": {"type": "string", "enum": ["monthly_sponsorship", "general_donation", "bulk_donation"]},
+          "status": {"type": "string", "enum": ["pending", "completed", "failed", "cancelled"]},
+          "paymentMethod": {"type": "string"},
+          "transactionId": {"type": "string"},
+          "currency": {"type": "string"},
+          "purpose": {"type": "string"},
+          "receiptGenerated": {"type": "boolean"},
+          "receiptUrl": {"type": "string"}
+        }
+      },
+      "ProgressReport": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "string"},
+          "studentId": {"type": "string"},
+          "studentName": {"type": "string"},
+          "reportDate": {"type": "string", "format": "date"},
+          "semester": {"type": "string"},
+          "subjects": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {"type": "string"},
+                "grade": {"type": "string"},
+                "marks": {"type": "number"}
+              }
+            }
+          },
+          "overallGrade": {"type": "string"},
+          "overallPercentage": {"type": "number"},
+          "attendance": {"type": "number"},
+          "achievements": {"type": "array", "items": {"type": "string"}},
+          "teacherComments": {"type": "string"},
+          "challenges": {"type": "string"},
+          "goals": {"type": "string"}
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "success": {"type": "boolean", "example": false},
+          "message": {"type": "string"}
+        }
+      }
+    }
+  },
+  "paths": {
+    "/api/auth/login": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Authenticate user and get access token",
+        "description": "Login endpoint that authenticates user credentials and returns JWT tokens",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/LoginRequest"}
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/LoginResponse"}
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/Error"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/register": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Create new user account",
+        "description": "Register a new user (student, sponsor, or admin)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/RegisterRequest"}
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User registered successfully"
+          },
+          "400": {
+            "description": "User already exists",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/Error"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Clear user session",
+        "description": "Logout endpoint that clears the user's refresh token",
+        "security": [{"bearerAuth": []}],
+        "responses": {
+          "200": {
+            "description": "Logged out successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {"type": "boolean"},
+                    "message": {"type": "string"}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/me": {
+      "get": {
+        "tags": ["Authentication"],
+        "summary": "Get authenticated user details",
+        "description": "Get current authenticated user information",
+        "security": [{"bearerAuth": []}],
+        "responses": {
+          "200": {
+            "description": "User details retrieved successfully"
+          }
+        }
+      }
+    },
+    "/api/auth/refresh": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Refresh JWT token",
+        "description": "Refresh access token using refresh token",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "refreshToken": {"type": "string"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Token refreshed successfully"
+          }
+        }
+      }
+    },
+    "/api/students": {
+      "get": {
+        "tags": ["Students"],
+        "summary": "Get all students with pagination and filters",
+        "description": "Retrieve list of students with optional filtering and pagination",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {"type": "integer", "default": 1}
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {"type": "integer", "default": 10}
+          },
+          {
+            "name": "region",
+            "in": "query",
+            "schema": {"type": "string"}
+          },
+          {
+            "name": "class",
+            "in": "query",
+            "schema": {"type": "string"}
+          },
+          {
+            "name": "financialNeed",
+            "in": "query",
+            "schema": {"type": "string", "enum": ["Low", "Medium", "High"]}
+          },
+          {
+            "name": "gender",
+            "in": "query",
+            "schema": {"type": "string", "enum": ["Male", "Female", "Other"]}
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "schema": {"type": "string", "default": "name"}
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "schema": {"type": "string", "enum": ["asc", "desc"], "default": "asc"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Students retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {"type": "boolean"},
+                    "data": {
+                      "type": "array",
+                      "items": {"$ref": "#/components/schemas/Student"}
+                    },
+                    "pagination": {
+                      "type": "object",
+                      "properties": {
+                        "page": {"type": "integer"},
+                        "limit": {"type": "integer"},
+                        "total": {"type": "integer"},
+                        "pages": {"type": "integer"}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Students"],
+        "summary": "Create new student",
+        "description": "Create a new student profile",
+        "security": [{"bearerAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/Student"}
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Student created successfully"
+          }
+        }
+      }
+    },
+    "/api/students/{id}": {
+      "get": {
+        "tags": ["Students"],
+        "summary": "Get student by ID",
+        "description": "Retrieve a specific student by their ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Student retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {"type": "boolean"},
+                    "data": {"$ref": "#/components/schemas/Student"}
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Students"],
+        "summary": "Update student profile",
+        "description": "Update an existing student's information",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"}
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/Student"}
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Student updated successfully"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Students"],
+        "summary": "Delete student (admin only)",
+        "description": "Delete a student record",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Student deleted successfully"
+          }
+        }
+      }
+    },
+    "/api/students/search": {
+      "get": {
+        "tags": ["Students"],
+        "summary": "Advanced search with filters",
+        "description": "Search students with multiple filter criteria",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "schema": {"type": "string"}
+          },
+          {
+            "name": "region",
+            "in": "query",
+            "schema": {"type": "string"}
+          },
+          {
+            "name": "class",
+            "in": "query",
+            "schema": {"type": "string"}
+          },
+          {
+            "name": "financialNeed",
+            "in": "query",
+            "schema": {"type": "string"}
+          },
+          {
+            "name": "gender",
+            "in": "query",
+            "schema": {"type": "string"}
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {"type": "integer", "default": 10}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Search results retrieved successfully"
+          }
+        }
+      }
+    },
+    "/api/students/{id}/dashboard": {
+      "get": {
+        "tags": ["Students"],
+        "summary": "Get student dashboard data",
+        "description": "Get comprehensive dashboard data for a student",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dashboard data retrieved successfully"
+          }
+        }
+      }
+    },
+    "/api/students/{id}/upload-document": {
+      "post": {
+        "tags": ["Students"],
+        "summary": "Upload document for application",
+        "description": "Upload a document file for student application",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"}
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {"type": "string", "format": "binary"},
+                  "documentType": {"type": "string"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Document uploaded successfully"
+          }
+        }
+      }
+    },
+    "/api/students/{id}/progress": {
+      "get": {
+        "tags": ["Students"],
+        "summary": "Get student progress history",
+        "description": "Retrieve progress reports for a student",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"}
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {"type": "integer", "default": 10}
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {"type": "integer", "default": 1}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Progress history retrieved successfully"
+          }
+        }
+      }
+    },
+    "/api/sponsors": {
+      "get": {
+        "tags": ["Sponsors"],
+        "summary": "Get all sponsors",
+        "description": "Retrieve list of sponsors with pagination",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {"type": "integer", "default": 1}
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {"type": "integer", "default": 10}
+          },
+          {
+            "name": "location",
+            "in": "query",
+            "schema": {"type": "string"}
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {"type": "string"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sponsors retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {"type": "boolean"},
+                    "data": {
+                      "type": "array",
+                      "items": {"$ref": "#/components/schemas/Sponsor"}
+                    },
+                    "pagination": {"type": "object"}
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Sponsors"],
+        "summary": "Register new sponsor",
+        "description": "Create a new sponsor account",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/Sponsor"}
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Sponsor registered successfully"
+          }
+        }
+      }
+    },
+    "/api/sponsors/{id}": {
+      "get": {
+        "tags": ["Sponsors"],
+        "summary": "Get sponsor by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sponsor retrieved successfully"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Sponsors"],
+        "summary": "Update sponsor profile",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"}
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/Sponsor"}
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sponsor updated successfully"
+          }
+        }
+      }
+    },
+    "/api/sponsors/{id}/dashboard": {
+      "get": {
+        "tags": ["Sponsors"],
+        "summary": "Get sponsor dashboard data",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dashboard data retrieved successfully"
+          }
+        }
+      }
+    },
+    "/api/sponsors/{id}/students": {
+      "get": {
+        "tags": ["Sponsors"],
+        "summary": "Get sponsored students",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"}
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {"type": "integer", "default": 1}
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {"type": "integer", "default": 10}
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {"type": "string"}
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {"type": "string"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sponsored students retrieved successfully"
+          }
+        }
+      }
+    },
+    "/api/sponsors/{id}/donations": {
+      "get": {
+        "tags": ["Sponsors"],
+        "summary": "Get sponsor donations",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"}
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {"type": "integer", "default": 1}
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {"type": "integer", "default": 10}
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "schema": {"type": "string"}
+          },
+          {
+            "name": "startDate",
+            "in": "query",
+            "schema": {"type": "string", "format": "date"}
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "schema": {"type": "string", "format": "date"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Donations retrieved successfully"
+          }
+        }
+      }
+    },
+    "/api/sponsors/search": {
+      "get": {
+        "tags": ["Sponsors"],
+        "summary": "Search sponsors",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "schema": {"type": "string"}
+          },
+          {
+            "name": "location",
+            "in": "query",
+            "schema": {"type": "string"}
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {"type": "integer", "default": 10}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Search results retrieved successfully"
+          }
+        }
+      }
+    },
+    "/api/sponsors/{sponsorId}/donations-summary": {
+      "get": {
+        "tags": ["Sponsors"],
+        "summary": "Get donation summary",
+        "parameters": [
+          {
+            "name": "sponsorId",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Donation summary retrieved successfully"
+          }
+        }
+      }
+    },
+    "/api/applications": {
+      "get": {
+        "tags": ["Applications"],
+        "summary": "Get all applications (admin)",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {"type": "integer", "default": 1}
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {"type": "integer", "default": 10}
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {"type": "string", "enum": ["pending", "approved", "rejected"]}
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "schema": {"type": "string", "default": "applicationDate"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Applications retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {"type": "boolean"},
+                    "data": {
+                      "type": "array",
+                      "items": {"$ref": "#/components/schemas/Application"}
+                    },
+                    "pagination": {"type": "object"}
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Applications"],
+        "summary": "Submit new application",
+        "security": [{"bearerAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "studentId": {"type": "string"},
+                  "documents": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "type": {"type": "string"},
+                        "filename": {"type": "string"},
+                        "uploadDate": {"type": "string"}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Application submitted successfully"
+          }
+        }
+      }
+    },
+    "/api/applications/{id}": {
+      "get": {
+        "tags": ["Applications"],
+        "summary": "Get application by ID",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Application retrieved successfully"
+          }
+        }
+      }
+    },
+    "/api/applications/{id}/status": {
+      "put": {
+        "tags": ["Applications"],
+        "summary": "Update application status",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"}
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {"type": "string", "enum": ["pending", "approved", "rejected"]},
+                  "adminNotes": {"type": "string"},
+                  "approvedBy": {"type": "string"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Application status updated"
+          }
+        }
+      }
+    },
+    "/api/applications/{id}/verify-document/{docId}": {
+      "put": {
+        "tags": ["Applications"],
+        "summary": "Verify document",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"}
+          },
+          {
+            "name": "docId",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"}
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "verified": {"type": "boolean"},
+                  "verifiedBy": {"type": "string"},
+                  "verificationNotes": {"type": "string"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Document verified successfully"
+          }
+        }
+      }
+    },
+    "/api/students/{studentId}/applications": {
+      "get": {
+        "tags": ["Applications"],
+        "summary": "Get student applications",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "studentId",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Student applications retrieved successfully"
+          }
+        }
+      }
+    },
+    "/api/donations": {
+      "get": {
+        "tags": ["Donations"],
+        "summary": "Get all donations",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {"type": "integer", "default": 1}
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {"type": "integer", "default": 10}
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "schema": {"type": "string"}
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {"type": "string"}
+          },
+          {
+            "name": "startDate",
+            "in": "query",
+            "schema": {"type": "string", "format": "date"}
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "schema": {"type": "string", "format": "date"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Donations retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {"type": "boolean"},
+                    "data": {
+                      "type": "array",
+                      "items": {"$ref": "#/components/schemas/Donation"}
+                    },
+                    "pagination": {"type": "object"}
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Donations"],
+        "summary": "Create new donation",
+        "security": [{"bearerAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/Donation"}
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Donation created successfully"
+          }
+        }
+      }
+    },
+    "/api/donations/{id}": {
+      "get": {
+        "tags": ["Donations"],
+        "summary": "Get donation by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Donation retrieved successfully"
+          }
+        }
+      }
+    },
+    "/api/donations/{id}/status": {
+      "put": {
+        "tags": ["Donations"],
+        "summary": "Update donation status",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"}
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {"type": "string"},
+                  "transactionId": {"type": "string"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Donation status updated"
+          }
+        }
+      }
+    },
+    "/api/donations/{id}/generate-receipt": {
+      "post": {
+        "tags": ["Donations"],
+        "summary": "Generate receipt for donation",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Receipt generated successfully"
+          }
+        }
+      }
+    },
+    "/api/donations/export": {
+      "get": {
+        "tags": ["Donations"],
+        "summary": "Export donations data",
+        "parameters": [
+          {
+            "name": "format",
+            "in": "query",
+            "schema": {"type": "string", "enum": ["csv", "xlsx"], "default": "csv"}
+          },
+          {
+            "name": "startDate",
+            "in": "query",
+            "schema": {"type": "string", "format": "date"}
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "schema": {"type": "string", "format": "date"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File download (CSV/XLSX)"
+          }
+        }
+      }
+    },
+    "/api/progress-reports": {
+      "get": {
+        "tags": ["Progress Reports"],
+        "summary": "Get all progress reports",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {"type": "integer", "default": 1}
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {"type": "integer", "default": 10}
+          },
+          {
+            "name": "studentId",
+            "in": "query",
+            "schema": {"type": "string"}
+          },
+          {
+            "name": "semester",
+            "in": "query",
+            "schema": {"type": "string"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Progress reports retrieved successfully"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Progress Reports"],
+        "summary": "Submit progress report",
+        "security": [{"bearerAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/ProgressReport"}
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Progress report submitted successfully"
+          }
+        }
+      }
+    },
+    "/api/progress-reports/{id}": {
+      "get": {
+        "tags": ["Progress Reports"],
+        "summary": "Get progress report by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Progress report retrieved successfully"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Progress Reports"],
+        "summary": "Update progress report",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"}
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/ProgressReport"}
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Progress report updated successfully"
+          }
+        }
+      }
+    },
+    "/api/students/{studentId}/progress-history": {
+      "get": {
+        "tags": ["Progress Reports"],
+        "summary": "Get student progress history",
+        "parameters": [
+          {
+            "name": "studentId",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"}
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {"type": "integer", "default": 10}
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {"type": "integer", "default": 1}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Progress history retrieved successfully"
+          }
+        }
+      }
+    },
+    "/api/sponsors/{sponsorId}/students-progress": {
+      "get": {
+        "tags": ["Progress Reports"],
+        "summary": "Get sponsored students progress",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "sponsorId",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sponsored students progress retrieved successfully"
+          }
+        }
+      }
+    },
+    "/api/admin/dashboard": {
+      "get": {
+        "tags": ["Admin"],
+        "summary": "Get admin dashboard",
+        "security": [{"bearerAuth": []}],
+        "responses": {
+          "200": {
+            "description": "Admin dashboard data retrieved successfully"
+          }
+        }
+      }
+    },
+    "/api/admin/users": {
+      "get": {
+        "tags": ["Admin"],
+        "summary": "Get all admin users",
+        "security": [{"bearerAuth": []}],
+        "responses": {
+          "200": {
+            "description": "Admin users retrieved successfully"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Admin"],
+        "summary": "Create admin user",
+        "security": [{"bearerAuth": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {"type": "string"},
+                  "email": {"type": "string"},
+                  "password": {"type": "string"},
+                  "role": {"type": "string", "enum": ["admin", "super_admin"]},
+                  "permissions": {
+                    "type": "array",
+                    "items": {"type": "string"}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Admin user created successfully"
+          }
+        }
+      }
+    },
+    "/api/admin/reports": {
+      "get": {
+        "tags": ["Admin"],
+        "summary": "Get reports",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "schema": {"type": "string", "example": "donation_summary"}
+          },
+          {
+            "name": "startDate",
+            "in": "query",
+            "schema": {"type": "string", "format": "date"}
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "schema": {"type": "string", "format": "date"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Reports retrieved successfully"
+          }
+        }
+      }
+    },
+    "/api/admin/applications/{id}/verify": {
+      "put": {
+        "tags": ["Admin"],
+        "summary": "Verify application",
+        "security": [{"bearerAuth": []}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"}
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {"type": "string", "enum": ["pending", "approved", "rejected"]},
+                  "adminNotes": {"type": "string"},
+                  "verifiedBy": {"type": "string"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Application verified successfully"
+          }
+        }
+      }
+    }
+  }
+}
+
